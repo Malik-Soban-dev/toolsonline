@@ -241,13 +241,12 @@ export function KeywordStudio() {
             <span className="eyebrow-line" />A CALMER WAY TO DO SEO
           </div>
           <h1>
-            A little less noise.
-            <br />A lot more <em>direction.</em>
+            A cleaner keyword list.
+            <br />A little more <em>direction.</em>
           </h1>
           <p>
-            Turn a messy keyword list into your next clear move.
-            <br className="desktop-break" /> Clean it up, find the connections, and take it from
-            here.
+            Remove duplicates, tidy your phrases, and organize shared-word topics.
+            <br className="desktop-break" /> A free keyword cleaner, right in your browser.
           </p>
         </div>
         <StudioIllustration />

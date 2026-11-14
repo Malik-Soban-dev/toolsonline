@@ -24,8 +24,8 @@ export function Collection() {
     <>
       <PageHeading
         eyebrow="KEEP THE GOOD ONES CLOSE"
-        title="A little collection"
-        accent="of possibilities."
+        title="Your keyword collection."
+        accent="Keep the possibilities."
         description="Save keywords as you explore, then take the useful ones into your next brief. No account or cloud storage involved."
       >
         <div className="page-icon-art">

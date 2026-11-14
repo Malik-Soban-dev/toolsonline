@@ -23,9 +23,9 @@ export function MetaHelper() {
     <>
       <PageHeading
         eyebrow="GIVE YOUR PAGE A CLEAR INTRODUCTION"
-        title="The right words,"
-        accent="without the blank page."
-        description="Turn a topic into a few title and description drafts. Pick a starting point, make it your own, and take the HTML with you."
+        title="Title & meta helper."
+        accent="Skip the blank page."
+        description="Draft page titles and meta descriptions with fixed sentence templates. Pick a starting point, edit your own copy, and take the HTML with you."
       >
         <div className="page-icon-art">
           <Type size={47} strokeWidth={1.1} />

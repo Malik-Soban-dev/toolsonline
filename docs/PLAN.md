@@ -30,3 +30,12 @@ No fabricated volume, CPC, keyword difficulty, ranking predictions, live SERPs, 
 ## Delivery status
 
 All six build stages are complete. The final local verification passed 78 unit tests, 33 browser tests, clean-state type checking/build, all targeted route/modal accessibility audits, and a full zero-vulnerability npm audit. See `docs/VERIFICATION.md` for evidence and limits. The Arena preview is running; Vercel preview provisioning and the later domain/production launch remain intentionally outside this delivery because no matching authorized Vercel project exists.
+
+## Follow-up: evidence-based SEO implementation
+
+- [x] Audit rendered metadata, headings, links, schema, status, and indexing controls across all routes; record external-preview access limits honestly.
+- [x] Implement descriptive branded titles, task-identifying H1s, original no-API field notes, real worked examples, and contextual internal links.
+- [x] Replace repeated app schema with appropriate route types and exclude collection/404 schema.
+- [x] Strengthen preview origin/environment/header safeguards; let crawlers read noindex and keep pre-launch public URLs/sitemap absent.
+- [x] Verify preview and local launch-fixture exports, all-route links/anchors, no-JavaScript readability, desktop/mobile accessibility, and narrow layouts.
+- [x] Update launch and verification evidence in `SEO-AUDIT.md`; keep production deployment, merge, and domain/DNS changes out of scope.

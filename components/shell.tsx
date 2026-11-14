@@ -210,9 +210,13 @@ export function Shell({ children }: { children: ReactNode }) {
             >
               <Menu size={21} />
             </button>
-            <span className="breadcrumb-home">Workspace</span>
-            <ChevronRight size={13} className="breadcrumb-chevron" />
-            <span>{routeNames[normalizedPath] ?? "Page not found"}</span>
+            <nav aria-label="Breadcrumb" className="breadcrumb-nav">
+              <Link href="/" className="breadcrumb-home">
+                Workspace
+              </Link>
+              <ChevronRight size={13} className="breadcrumb-chevron" aria-hidden="true" />
+              <span aria-current="page">{routeNames[normalizedPath] ?? "Page not found"}</span>
+            </nav>
           </div>
           <div className="topbar-right">
             <span className="local-status">

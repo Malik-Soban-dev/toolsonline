@@ -1,10 +1,17 @@
 import { KeywordIdeas } from "@/components/keyword-ideas";
+import { PageSchema } from "@/components/page-schema";
+import { ToolGuide } from "@/components/tool-guide";
+import { pages } from "@/lib/pages";
 import { pageMetadata } from "@/lib/site";
-export const metadata = pageMetadata(
-  "Keyword ideas",
-  "Explore template-based keyword questions, comparisons, and long-tail phrases. No fabricated volumes or autocomplete claims. Works locally without an API.",
-  "/keyword-ideas/",
-);
+
+export const metadata = pageMetadata(pages.ideas);
+
 export default function KeywordIdeasPage() {
-  return <KeywordIdeas />;
+  return (
+    <>
+      <PageSchema page={pages.ideas} />
+      <KeywordIdeas />
+      <ToolGuide tool="ideas" />
+    </>
+  );
 }

@@ -44,9 +44,9 @@ export function SerpPreview() {
     <>
       <PageHeading
         eyebrow="SEE IT BEFORE YOU PUBLISH"
-        title="A small preview."
-        accent="A better first impression."
-        description="Shape your title and description in a search-style preview. Make the most of the few lines that introduce your page."
+        title="SERP snippet preview."
+        accent="See it before you publish."
+        description="Shape your page title and meta description in desktop and mobile search-style layouts. An approximate preview, not a live search result."
       >
         <div className="page-icon-art">
           <PanelTop size={46} strokeWidth={1.1} />

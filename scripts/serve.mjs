@@ -48,6 +48,8 @@ createServer((req, res) => {
     res.writeHead(found ? 200 : 404, {
       "Content-Type": types[extname(file)] || "application/octet-stream",
       "X-Content-Type-Options": "nosniff",
+      // This command serves evaluation previews, never an indexable production host.
+      "X-Robots-Tag": "noindex, nofollow",
       "Referrer-Policy": "strict-origin-when-cross-origin",
       "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
       "Cache-Control": pathname.startsWith("/_next/static/")

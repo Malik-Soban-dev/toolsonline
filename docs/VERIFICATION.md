@@ -8,7 +8,23 @@
 
 The preview is an Arena sandbox URL, not a Vercel deployment or production domain. The app was tested against its local upstream, including a request using the actual preview Host header; the platform exposed port 3000 without a host/origin/embedding warning.
 
-## Commands actually run
+## Latest verification: SEO implementation pass
+
+The completed SEO pass is documented route by route in [SEO-AUDIT.md](SEO-AUDIT.md). It supersedes the historical metadata/robots behavior below: robots now allow crawlers to read noindex, preview responses add an HTTP noindex header, schema is route-specific, and no public URLs appear before the deliberate launch gate.
+
+- **137 unit tests passed** (CSV 25, keywords 26, analysis 20, site/SEO 66).
+- **38 browser tests passed**, no retries, including all-route metadata/schema, local link/fragment checks, JavaScript-disabled field notes/navigation, real worked examples, existing tool workflows, responsive layouts, and accessibility checks.
+- **5 additional SEO browser tests passed against a local fixture-domain launch export**. Ten public canonical/sitemap URLs and social/schema URLs were consistent; collection and 404 stayed excluded/noindex. This was local only, not a production deployment. The preview was rebuilt with indexing disabled afterward.
+- Formatting, zero-warning lint, TypeScript, and static export passed; full and production npm audits both reported **0 vulnerabilities**.
+- Desktop/mobile Chromium/axe checks again reported zero targeted violations on all 11 routes. No document overflow at **320/390/768/1024/1440 px**. New screenshots and before/after rendered audits live in ignored `artifacts/seo/`.
+- The actual preview Host request returned **200** with `X-Robots-Tag: noindex, nofollow`. An unauthenticated external preview fetch was blocked by Arena's traffic gate (**403**); this is not claimed as a successful public crawl.
+- CI now repeats the safe-preview checks and a build/browser-only launch fixture. It has **no deployment job**. Current-commit remote check status must be read from PR #1 rather than inferred from local success.
+
+## Initial implementation verification (historical)
+
+The following checks describe the original workbench delivery before the SEO pass. Their test totals are historical, not the current suite size.
+
+### Commands actually run
 
 | Check                         | Observed result                                                                              |
 | ----------------------------- | -------------------------------------------------------------------------------------------- |
@@ -74,7 +90,7 @@ Screenshots and machine-generated audit artifacts are in ignored `artifacts/`; P
 - `lib/`: pure CSV, keyword, analysis, and metadata logic.
 - `styles/tools.css`, `public/`: companion-tool styles, original identity/illustration/social assets, touch icon, and third-party font/icon license notices.
 - `tests/`, `scripts/`, `.github/workflows/ci.yml`: reproducible tests, static preview, browser setup, and CI (no deployment job).
-- Project/configuration files, lockfile, `README.md`, and `docs/{PLAN,LAUNCH,VERIFICATION}.md`.
+- Project/configuration files, lockfile, `README.md`, and `docs/{PLAN,LAUNCH,VERIFICATION,SEO-AUDIT}.md`.
 
 ## Capability findings and remaining limits
 

@@ -61,9 +61,9 @@ export function KeywordIdeas() {
     <>
       <PageHeading
         eyebrow="FIND YOUR NEXT ANGLE"
-        title="One topic."
-        accent="A few new possibilities."
-        description="Explore questions, comparisons, and longer phrases. A springboard for your thinking—not a prediction of demand."
+        title="Keyword ideas."
+        accent="Room to explore."
+        description="Build question, comparison, and long-tail prompts from a topic. Fixed English templates—not autocomplete results or evidence of demand."
       >
         <div className="page-icon-art">
           <Lightbulb size={46} strokeWidth={1} />

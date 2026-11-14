@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { ArrowLeft, Search } from "lucide-react";
+export const metadata = {
+  title: { absolute: "Page Not Found · Online Tools" },
+  description: "There is no page at this address. Return to the Online Tools keyword studio.",
+  robots: { index: false, follow: false },
+};
+
 export default function NotFound() {
   return (
     <div className="not-found">

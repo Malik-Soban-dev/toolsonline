@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
+import { pages, type PageDefinition } from "../../lib/pages";
 
 const mainRoutes = [
   "/",
@@ -18,7 +19,7 @@ const mainRoutes = [
 
 test("studio cleans and filters a real list, then exports the actual CSV", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("A little less noise");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("A cleaner keyword list");
   await expect(page.getByText("Example list · coffee")).toBeVisible();
   await page
     .getByLabel("Keyword list, one keyword per line")
@@ -272,6 +273,35 @@ for (const route of mainRoutes) {
       "noindex, nofollow",
     );
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+    const definition: PageDefinition = Object.values(pages).find((item) => item.path === route)!;
+    await expect(page).toHaveTitle(`${definition.title} · Online Tools`);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      definition.description,
+    );
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      "content",
+      `${definition.title} · Online Tools`,
+    );
+    await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
+      "content",
+      "Online Tools",
+    );
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute(
+      "content",
+      definition.description,
+    );
+    const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
+    if (definition.private) {
+      expect(schemas).toEqual([]);
+    } else {
+      expect(schemas).toHaveLength(1);
+      expect(JSON.parse(schemas[0])).toMatchObject({
+        "@type": definition.schemaType,
+        name: definition.title,
+      });
+    }
+    expect(response?.headers()["x-robots-tag"]).toBe("noindex, nofollow");
     expect(errors).toEqual([]);
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
@@ -318,6 +348,9 @@ test("unknown routes get a genuine 404 page", async ({ page }) => {
   const response = await page.goto("/this-does-not-exist/");
   expect(response?.status()).toBe(404);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("out exploring");
+  await expect(page).toHaveTitle("Page Not Found · Online Tools");
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(0);
+  expect(response?.headers()["x-robots-tag"]).toBe("noindex, nofollow");
 });
 
 test("the 5,000 keyword boundary works through the real bulk import workflow", async ({ page }) => {
@@ -387,7 +420,8 @@ test("technical SEO and static hosting are safely configured before the domain",
 }) => {
   const robots = await request.get("/robots.txt");
   expect(robots.status()).toBe(200);
-  expect(await robots.text()).toContain("Disallow: /");
+  expect(await robots.text()).toContain("Allow: /");
+  expect(await robots.text()).not.toContain("Disallow:");
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.status()).toBe(200);
   expect(await sitemap.text()).not.toContain("<loc>");
@@ -395,7 +429,7 @@ test("technical SEO and static hosting are safely configured before the domain",
   const schema = await page.locator('script[type="application/ld+json"]').textContent();
   expect(JSON.parse(schema!)).toMatchObject({
     "@type": "WebApplication",
-    name: "Online Tools",
+    name: pages.studio.title,
     isAccessibleForFree: true,
   });
   const image = await request.get("/social-card.png");
@@ -403,6 +437,7 @@ test("technical SEO and static hosting are safely configured before the domain",
   expect(image.headers()["content-type"]).toBe("image/png");
   const headers = await request.head("/");
   expect(headers.headers()["x-content-type-options"]).toBe("nosniff");
+  expect(headers.headers()["x-robots-tag"]).toBe("noindex, nofollow");
   expect(headers.headers()["x-frame-options"]).toBeUndefined();
   const missing = await request.get("/not-an-asset.js");
   expect(missing.status()).toBe(404);

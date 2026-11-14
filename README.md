@@ -56,16 +56,18 @@ No secrets are needed. Do not add service-role keys, provider credentials, or co
 
 ## SEO and the later domain
 
-Until a real domain is configured, pages are `noindex, nofollow`, `robots.txt` disallows crawling, `sitemap.xml` is empty, and canonicals are omitted—never set to a made-up domain. The private collection always stays noindex and is excluded from the sitemap.
+All 11 routes have descriptive titles, task-identifying headings, and route-specific metadata. The five tools include server-rendered practical guides, worked examples, limits, and contextual next-tool links. Structured data describes the actual tool or trust page, not the same app on every route. See the evidence and route decisions in [the SEO audit](docs/SEO-AUDIT.md).
+
+Until a separately approved custom-domain launch, pages are `noindex, nofollow`, the sitemap is empty, and canonicals/public schema URLs are omitted. `robots.txt` allows crawling so crawlers can read the noindex tags—it is not an access-control mechanism. Keep preview protection enabled. `npm start` adds an always-noindex preview HTTP header; `vercel.json` also scopes noindex headers to known preview hosts. The browser-only collection always stays noindex, has no canonical/schema, and is excluded from the sitemap.
 
 After a separately approved production launch:
 
-1. Set `SITE_URL` to the owned, connected **HTTPS origin**.
+1. Set `SITE_URL` to the owned, connected **HTTPS origin** only—no path, query, fragment, credentials, or non-default port. Placeholder, reserved/local, IP, and known platform-preview origins are rejected.
 2. Review legal identity/contact details, copy, policies, and accessibility.
 3. Deliberately set `ALLOW_INDEXING=true` for production only.
-4. Rebuild and confirm canonicals, social-card URLs, robots, and sitemap.
+4. Rebuild and confirm all ten public canonicals, route-specific schema, social-card URLs, actual response headers, robots, and sitemap. `npm start` remains a noindex evaluation server, not a production server.
 
-Vercel previews remain noindex even if `ALLOW_INDEXING` is accidentally set there. Domain or environment changes require a new build because this app is static. `.env.example` documents the only optional settings. See the [launch checklist](docs/LAUNCH.md).
+Non-production Vercel builds remain noindex even if `ALLOW_INDEXING` is accidentally set there; public URL metadata is omitted until the full launch gate passes. Domain or environment changes require a new build because this app is static. `.env.example` documents the only optional settings. See the [launch checklist](docs/LAUNCH.md).
 
 ## Vercel status
 
@@ -84,7 +86,7 @@ public/               Original vector identity, social image, and touch icon
 scripts/              Static preview server and browser-test runner
 tests/unit/           Algorithm, security, bounds, and metadata tests
 tests/e2e/            Real workflow, responsive, accessibility, and privacy tests
-docs/                 Plan, launch checklist, and verification evidence
+docs/                 Plan, SEO audit, launch checklist, and verification evidence
 .github/workflows/    CI checks (no deployment jobs)
 ```
 

@@ -1,10 +1,17 @@
 import { MetaHelper } from "@/components/meta-helper";
+import { PageSchema } from "@/components/page-schema";
+import { ToolGuide } from "@/components/tool-guide";
+import { pages } from "@/lib/pages";
 import { pageMetadata } from "@/lib/site";
-export const metadata = pageMetadata(
-  "Title & meta helper",
-  "Draft and refine page titles and meta descriptions with simple transparent templates. Edit your own copy, check length, and export HTML tags with no API.",
-  "/meta-helper/",
-);
+
+export const metadata = pageMetadata(pages.meta);
+
 export default function MetaHelperPage() {
-  return <MetaHelper />;
+  return (
+    <>
+      <PageSchema page={pages.meta} />
+      <MetaHelper />
+      <ToolGuide tool="meta" />
+    </>
+  );
 }

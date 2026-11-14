@@ -27,9 +27,9 @@ export function TextAnalyzer() {
     <>
       <PageHeading
         eyebrow="MAKE EVERY WORD WORK"
-        title="Get to know"
-        accent="your writing."
-        description="A closer look at the words on your page. Find repeated terms, check a focus phrase, and keep your writing human."
+        title="Word frequency counter."
+        accent="Read the patterns."
+        description="Count words, find repeated terms and two-word phrases, and check a focus phrase. Local text analysis to help you edit—not an SEO score."
       >
         <div className="page-icon-art">
           <AlignLeft size={45} strokeWidth={1.1} />
