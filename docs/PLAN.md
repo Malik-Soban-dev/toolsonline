@@ -23,6 +23,10 @@ An original, local-first SEO workbench, not an API-backed keyword metrics produc
 5. Technical SEO: page-specific server-rendered metadata, schema, icons, social image, robots and sitemap gated on a real domain and explicit indexing opt-in. Previews are noindex.
 6. Verify: unit tests, TypeScript, ESLint, production export, browser integration at desktop/mobile sizes, accessibility audit, network/privacy checks, and a live preview.
 
+## Later addition: dedicated keyword clustering
+
+A sixth tool route (`/keyword-clusters/`) was added after the SEO pass. It reuses the single clustering engine in `lib/keywords.ts`, so the studio's topic labels and the clustering tool's groups can never drift apart. The route keeps the same honesty rules: lexical shared-wording grouping with no SERP, semantic, autocomplete, volume, CPC, or difficulty claims. See [the SEO audit](SEO-AUDIT.md) for the route decisions and evidence.
+
 ## Explicit exclusions
 
 No fabricated volume, CPC, keyword difficulty, ranking predictions, live SERPs, Google autocomplete claims, external AI, production deployment, DNS/domain changes, or unnecessary infrastructure.

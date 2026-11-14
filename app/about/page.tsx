@@ -28,7 +28,7 @@ export default function AboutPage() {
           <div>
             <Leaf size={21} />
             <h2>Small on purpose</h2>
-            <p>Five focused tools. No sign-up wall or pretend premium tier.</p>
+            <p>Six focused tools. No sign-up wall or pretend premium tier.</p>
           </div>
           <div>
             <LockKeyhole size={21} />
@@ -44,11 +44,13 @@ export default function AboutPage() {
         <h2>What you can do here</h2>
         <p>
           Start with the <Link href="/">keyword list cleaner</Link> to deduplicate a CSV or organize
-          shared-word topics. Explore <Link href="/keyword-ideas/">template keyword ideas</Link>,
-          review repeated words with the <Link href="/text-analyzer/">text analyzer</Link>, or write
-          page copy with the <Link href="/meta-helper/">title and meta description helper</Link>.
-          Check your introduction in the <Link href="/serp-preview/">SERP snippet preview</Link>,
-          then export what you want to keep.
+          shared-word topics. Group a long list with the{" "}
+          <Link href="/keyword-clusters/">keyword clustering tool</Link>, explore{" "}
+          <Link href="/keyword-ideas/">template keyword ideas</Link>, review repeated words with the{" "}
+          <Link href="/text-analyzer/">text analyzer</Link>, or write page copy with the{" "}
+          <Link href="/meta-helper/">title and meta description helper</Link>. Check your
+          introduction in the <Link href="/serp-preview/">SERP snippet preview</Link>, then export
+          what you want to keep.
         </p>
         <h2>What you won’t find here</h2>
         <p>

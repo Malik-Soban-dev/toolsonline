@@ -120,42 +120,209 @@ function stem(token: string): string {
   return token;
 }
 
-function topicTokens(text: string): string[] {
-  return tokenize(text)
-    .filter((token) => !STOPWORDS.has(token) && token.length > 1)
-    .map(stem);
+function contentTokens(text: string): string[] {
+  return tokenize(text).filter((token) => !STOPWORDS.has(token) && token.length > 1);
 }
 
-/** Bigram-first lexical grouping, O(n * words). Shared ordered phrases are evidence, not SERP overlap. */
-export function clusterKeywords(items: Omit<Keyword, "cluster">[]): Keyword[] {
-  const documents = items.map((item) => topicTokens(item.keyword));
-  const singles = new Map<string, number>();
-  const pairs = new Map<string, number>();
-  for (const tokens of documents) {
-    for (const token of new Set(tokens)) singles.set(token, (singles.get(token) ?? 0) + 1);
-    const bigrams = tokens.slice(0, -1).map((token, index) => `${token} ${tokens[index + 1]}`);
-    for (const pair of new Set(bigrams)) pairs.set(pair, (pairs.get(pair) ?? 0) + 1);
+function topicTokens(text: string): string[] {
+  return contentTokens(text).map(stem);
+}
+
+export type ClusterOptions = {
+  /** 1 lets one shared word anchor a group; 2 requires a shared two-word phrase. */
+  minSharedWords: 1 | 2;
+  /** Smallest group to keep. */
+  minSize: number;
+};
+
+export const DEFAULT_CLUSTER_OPTIONS: ClusterOptions = { minSharedWords: 1, minSize: 2 };
+// A readable review surface matters more than an exhaustive list of tiny groups.
+export const CLUSTER_MAX_GROUPS = 60;
+export const UNGROUPED_LABEL = "Other topics";
+
+export type Cluster = {
+  id: string;
+  /** Normalized shared wording, e.g. "Coffee grinder". */
+  label: string;
+  /** Stemmed anchor wording that every phrase in the group contains. */
+  anchor: string[];
+  /** Other wording shared by most of the group, shown as evidence. */
+  sharedTerms: string[];
+  keywords: Keyword[];
+  intentMix: { intent: Intent; count: number }[];
+};
+
+export type ClusterResult = {
+  clusters: Cluster[];
+  ungrouped: Keyword[];
+  keywordCount: number;
+  groupedCount: number;
+  largestGroup: number;
+  /** True when CLUSTER_MAX_GROUPS stopped the greedy pass. */
+  truncated: boolean;
+};
+
+function bigrams(tokens: string[]): string[] {
+  return tokens.slice(0, -1).map((token, index) => `${token} ${tokens[index + 1]}`);
+}
+
+function containsSequence(tokens: string[], sequence: string[]): boolean {
+  if (!sequence.length) return false;
+  for (let start = 0; start + sequence.length <= tokens.length; start++) {
+    let matched = true;
+    for (let offset = 0; offset < sequence.length; offset++) {
+      if (tokens[start + offset] !== sequence[offset]) {
+        matched = false;
+        break;
+      }
+    }
+    if (matched) return true;
   }
-  return items.map((item, index) => {
-    const tokens = documents[index];
-    const bigrams = tokens.slice(0, -1).map((token, i) => `${token} ${tokens[i + 1]}`);
-    // Prefer specific recurring phrases, but suppress corpus-wide anchors (e.g. 'coffee').
-    const candidatePairs = bigrams
-      .filter((pair) => (pairs.get(pair) ?? 0) >= 2)
-      .sort((a, b) => (pairs.get(b) ?? 0) - (pairs.get(a) ?? 0) || a.localeCompare(b));
-    const candidateSingles = [...new Set(tokens)]
-      .filter(
-        (token) =>
-          (singles.get(token) ?? 0) >= 2 && (singles.get(token) ?? 0) < items.length * 0.85,
-      )
-      .sort((a, b) => (singles.get(b) ?? 0) - (singles.get(a) ?? 0) || a.localeCompare(b));
-    const cluster = candidatePairs[0] ?? candidateSingles[0] ?? "Other topics";
-    return {
-      ...item,
-      cluster:
-        cluster === "Other topics" ? cluster : cluster.charAt(0).toUpperCase() + cluster.slice(1),
-    };
+  return false;
+}
+
+function mostCommonSurface(stemmed: string, surfaces: string[][]): string {
+  const counts = new Map<string, number>();
+  for (const tokens of surfaces) {
+    const index = tokens.findIndex((token) => stem(token) === stemmed);
+    if (index < 0) continue;
+    counts.set(tokens[index], (counts.get(tokens[index]) ?? 0) + 1);
+  }
+  const ranked = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  return ranked[0]?.[0] ?? stemmed;
+}
+
+/**
+ * One greedy, deterministic lexical clustering pass shared by the studio and the clustering tool.
+ * Most specific recurring wording anchors first; each phrase joins its first matching group.
+ * Shared wording is evidence, never SERP overlap, embeddings, or demand data.
+ */
+export function buildClusters(
+  keywords: Keyword[],
+  options: ClusterOptions = DEFAULT_CLUSTER_OPTIONS,
+): ClusterResult {
+  const documents = keywords.map((item) => topicTokens(item.keyword));
+  const surfaces = keywords.map((item) => contentTokens(item.keyword));
+  const minSize = Math.max(2, Math.floor(options.minSize));
+  const singleCounts = new Map<string, number>();
+  const pairCounts = new Map<string, number>();
+  for (const tokens of documents) {
+    for (const token of new Set(tokens))
+      singleCounts.set(token, (singleCounts.get(token) ?? 0) + 1);
+    for (const pair of new Set(bigrams(tokens)))
+      pairCounts.set(pair, (pairCounts.get(pair) ?? 0) + 1);
+  }
+  const candidates: { anchor: string[]; count: number; starts: number }[] = [];
+  for (const [pair, count] of pairCounts) {
+    if (count < minSize) continue;
+    const anchor = pair.split(" ");
+    const starts = documents.filter((tokens) =>
+      containsSequence(tokens.slice(0, anchor.length), anchor),
+    ).length;
+    candidates.push({ anchor, count, starts });
+  }
+  if (options.minSharedWords < 2)
+    for (const [token, count] of singleCounts) {
+      // Suppress corpus-wide anchors; a word in almost every phrase separates nothing.
+      if (count < minSize || count >= keywords.length * 0.85) continue;
+      candidates.push({
+        anchor: [token],
+        count,
+        starts: documents.filter((t) => t[0] === token).length,
+      });
+    }
+  candidates.sort(
+    (a, b) =>
+      b.anchor.length - a.anchor.length ||
+      b.count - a.count ||
+      b.starts - a.starts ||
+      a.anchor.join(" ").localeCompare(b.anchor.join(" ")),
+  );
+
+  const assigned = new Set<number>();
+  const clusters: Cluster[] = [];
+  for (const candidate of candidates) {
+    if (clusters.length >= CLUSTER_MAX_GROUPS) break;
+    const members: number[] = [];
+    documents.forEach((tokens, index) => {
+      if (assigned.has(index)) return;
+      if (containsSequence(tokens, candidate.anchor)) members.push(index);
+    });
+    if (members.length < minSize) continue;
+    for (const index of members) assigned.add(index);
+    const memberSurfaces = members.map((index) => surfaces[index]);
+    const memberDocuments = members.map((index) => documents[index]);
+    const label = candidate.anchor
+      .map((token) => mostCommonSurface(token, memberSurfaces))
+      .join(" ");
+    const anchorSet = new Set(candidate.anchor);
+    const otherCounts = new Map<string, number>();
+    for (const tokens of memberDocuments)
+      for (const token of new Set(tokens)) {
+        if (anchorSet.has(token)) continue;
+        otherCounts.set(token, (otherCounts.get(token) ?? 0) + 1);
+      }
+    const threshold = Math.max(2, Math.ceil(members.length / 2));
+    const sharedTerms = [...otherCounts]
+      .filter(([, count]) => count >= threshold)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .slice(0, 4)
+      .map(([token]) => mostCommonSurface(token, memberSurfaces));
+    const intentCounts = new Map<Intent, number>();
+    for (const index of members) {
+      const intent = keywords[index].intent;
+      intentCounts.set(intent, (intentCounts.get(intent) ?? 0) + 1);
+    }
+    clusters.push({
+      id: `cluster-${clusters.length}`,
+      label: label.charAt(0).toUpperCase() + label.slice(1),
+      anchor: candidate.anchor,
+      sharedTerms,
+      keywords: members.map((index) => keywords[index]),
+      intentMix: [...intentCounts]
+        .map(([intent, count]) => ({ intent, count }))
+        .sort((a, b) => b.count - a.count || a.intent.localeCompare(b.intent)),
+    });
+  }
+  clusters.sort((a, b) => b.keywords.length - a.keywords.length || a.label.localeCompare(b.label));
+  clusters.forEach((cluster, index) => {
+    cluster.id = `cluster-${index}`;
   });
+  const ungrouped = keywords.filter((_, index) => !assigned.has(index));
+  return {
+    clusters,
+    ungrouped,
+    keywordCount: keywords.length,
+    groupedCount: keywords.length - ungrouped.length,
+    largestGroup: clusters.reduce((max, cluster) => Math.max(max, cluster.keywords.length), 0),
+    truncated: clusters.length >= CLUSTER_MAX_GROUPS,
+  };
+}
+
+/** Per-keyword labels for the studio, derived from the shared clustering engine. */
+export function clusterKeywords(items: Omit<Keyword, "cluster">[]): Keyword[] {
+  const seeded: Keyword[] = items.map((item) => ({ ...item, cluster: UNGROUPED_LABEL }));
+  const { clusters } = buildClusters(seeded);
+  const labels = new Map<string, string>();
+  for (const cluster of clusters)
+    for (const item of cluster.keywords) labels.set(item.id, cluster.label);
+  return seeded.map((item) => ({ ...item, cluster: labels.get(item.id) ?? UNGROUPED_LABEL }));
+}
+
+/**
+ * Studio topic view: groups by the label each phrase already carries, so filtering never
+ * re-clusters a subset. Labels come from the shared engine, so they cannot drift apart.
+ */
+export function groupByCluster(keywords: Keyword[]) {
+  const groups = new Map<string, Keyword[]>();
+  for (const item of keywords) {
+    const group = groups.get(item.cluster);
+    if (group) group.push(item);
+    else groups.set(item.cluster, [item]);
+  }
+  return [...groups]
+    .map(([name, items]) => ({ name, items }))
+    .sort((a, b) => b.items.length - a.items.length || a.name.localeCompare(b.name));
 }
 
 export function keywordSignature(input: string | string[], options: CleanOptions): string {
@@ -266,16 +433,4 @@ export function generateSuggestions(seed: string): Suggestion[] {
   return groups.flatMap(({ category, templates }) =>
     templates.map((keyword) => ({ keyword, category, intent: inferIntent(keyword) })),
   );
-}
-
-export function clusterSummary(keywords: Keyword[]) {
-  const groups = new Map<string, Keyword[]>();
-  for (const item of keywords) {
-    const group = groups.get(item.cluster);
-    if (group) group.push(item);
-    else groups.set(item.cluster, [item]);
-  }
-  return [...groups]
-    .map(([name, items]) => ({ name, items }))
-    .sort((a, b) => b.items.length - a.items.length || a.name.localeCompare(b.name));
 }

@@ -5,6 +5,7 @@ import { pages, type PageDefinition } from "../../lib/pages";
 
 const mainRoutes = [
   "/",
+  "/keyword-clusters/",
   "/keyword-ideas/",
   "/text-analyzer/",
   "/serp-preview/",
@@ -175,6 +176,76 @@ test("ideas are template-labeled, filterable, savable, and transferable", async 
   await expect(page).toHaveURL("/");
   await expect(page.getByLabel("Keyword list, one keyword per line")).toHaveValue(
     /how to choose indoor plants/,
+  );
+});
+
+test("clusters group real wording, stay adjustable, and transfer to the studio", async ({
+  page,
+}) => {
+  await page.goto("/keyword-clusters/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Keyword clustering");
+  await expect(page.getByText("Example list · coffee")).toBeVisible();
+  // Default example: four groups plus one phrase with no shared wording.
+  await expect(page.locator(".cluster-result-card")).toHaveCount(5);
+  const coldBrew = page.locator(".cluster-result-card").filter({ hasText: "Cold brew" }).first();
+  await expect(coldBrew.locator(".cluster-shared")).toContainText("cold brew, maker");
+  await expect(page.locator(".cluster-review-card .cluster-members li")).toHaveCount(1);
+  await page
+    .getByLabel("Keyword list to cluster, one keyword per line")
+    .fill(
+      [
+        "best coffee beans",
+        "how to store coffee beans",
+        "coffee grinder reviews",
+        "best coffee grinder",
+        "how to clean a coffee grinder",
+        "cold brew ratio",
+        "coffee subscription",
+      ].join("\n"),
+    );
+  await page.getByRole("button", { name: "Group keywords" }).click();
+  await expect(page.locator(".cluster-result-card")).toHaveCount(3);
+  const headings = page.locator(".cluster-result-heading h3");
+  await expect(headings.nth(0)).toHaveText("Coffee grinder");
+  await expect(headings.nth(1)).toHaveText("Coffee beans");
+  await expect(headings.nth(2)).toHaveText("Needs review");
+  await expect(page.locator(".cluster-review-card .cluster-members li")).toHaveCount(2);
+  await expect(page.locator(".cluster-shared").first()).toContainText("coffee grinder");
+  // A word in almost every phrase is too common to anchor a group by itself.
+  await expect(page.getByRole("heading", { level: 3, name: "Coffee", exact: true })).toHaveCount(0);
+  await expect(
+    page.getByText("No search volume, SERP overlap, autocomplete, or semantic AI", {
+      exact: false,
+    }),
+  ).toBeVisible();
+
+  await page.getByLabel("Smallest group").selectOption("3");
+  await expect(page.locator(".cluster-result-card")).toHaveCount(2);
+  await expect(page.locator(".cluster-review-card .cluster-members li")).toHaveCount(4);
+  await page.getByLabel("Smallest group").selectOption("2");
+  await page.getByLabel("Shared wording rule").selectOption("2");
+  await expect(page.locator(".cluster-result-card")).toHaveCount(3);
+
+  await page.getByLabel("Filter clustered keywords").fill("grinder");
+  await expect(page.locator(".cluster-result-card")).toHaveCount(1);
+  await page.getByLabel("Filter clustered keywords").fill("");
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export CSV" }).click();
+  const download = await downloadPromise;
+  const csv = await readFile((await download.path())!, "utf8");
+  expect(csv).toContain('"Cluster (lexical)"');
+  expect(csv).toContain('"coffee grinder reviews","Coffee grinder"');
+  expect(csv).toContain('"cold brew ratio","Needs review"');
+
+  await page
+    .locator(".cluster-result-card")
+    .first()
+    .getByRole("button", { name: "Open in studio" })
+    .click();
+  await expect(page).toHaveURL("/");
+  await expect(page.getByLabel("Keyword list, one keyword per line")).toHaveValue(
+    /coffee grinder reviews/,
   );
 });
 

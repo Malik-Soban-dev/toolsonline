@@ -29,7 +29,7 @@ The current delivery is an evaluation preview. Production launch and domain conn
 ## After an approved domain launch
 
 - [ ] Check the canonical host and slash redirects on the real host. Do not enable indexing on alternate preview URLs; keep staging protected.
-- [ ] Inspect rendered and raw HTML, actual `X-Robots-Tag` headers, ten self-canonicals, absolute social images, and sitemap/robots agreement. Ensure crawlers can read noindex on excluded routes.
+- [ ] Inspect rendered and raw HTML, actual `X-Robots-Tag` headers, eleven self-canonicals, absolute social images, and sitemap/robots agreement. Ensure crawlers can read noindex on excluded routes.
 - [ ] Validate relevant structured data with the appropriate validators. Do not add ratings, reviews, or rich-result claims without genuine qualifying content.
 - [ ] If desired, verify domain ownership in Search Console, submit the real sitemap, and inspect important URLs. No Search Console setup, public indexing verification, or ranking evidence is claimed here.
 

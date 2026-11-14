@@ -8,7 +8,16 @@
 
 The preview is an Arena sandbox URL, not a Vercel deployment or production domain. The app was tested against its local upstream, including a request using the actual preview Host header; the platform exposed port 3000 without a host/origin/embedding warning.
 
-## Latest verification: SEO implementation pass
+## Latest verification: keyword clustering route
+
+- **147 unit tests passed** (CSV 25, keywords 35, analysis 20, site/SEO 66). The nine new clustering tests cover shared-phrase anchors with tie-breaking, the seven-phrase worked example (two groups, two review items, "coffee" skipped as too common), minimum group size, the two-word-phrase rule, intent mix with no invented metric fields, the published sample's four groups, studio-label agreement, and determinism.
+- **40 browser tests passed**, no retries: 35 workspace/accessibility checks and 5 SEO checks. The new workflow test groups a real pasted list, verifies group headings and the review list, changes the shared-wording rule and smallest group size, filters, checks exported CSV contents (`"Cluster (lexical)"`, `"Needs review"`), and transfers a group into the studio.
+- **5 SEO browser tests passed against a local fixture-domain launch export**: eleven public canonical/sitemap URLs including `/keyword-clusters/`, with social/schema URLs consistent. Local only; the safe noindex preview export was restored afterward.
+- Formatting, zero-warning lint, TypeScript, and static export passed.
+- Axe checks on `/keyword-clusters/` reported zero targeted WCAG 2.0/2.1 A/AA violations, and a geometry audit at 1440/1024/390/320 px found no clipping, overlaps, or horizontal overflow beyond intentional `.sr-only` labels.
+- Preview safety unchanged: meta and HTTP `noindex, nofollow`, no canonicals, empty sitemap, `Allow: /` robots.
+
+## Previous verification: SEO implementation pass
 
 The completed SEO pass is documented route by route in [SEO-AUDIT.md](SEO-AUDIT.md). It supersedes the historical metadata/robots behavior below: robots now allow crawlers to read noindex, preview responses add an HTTP noindex header, schema is route-specific, and no public URLs appear before the deliberate launch gate.
 
@@ -16,7 +25,7 @@ The completed SEO pass is documented route by route in [SEO-AUDIT.md](SEO-AUDIT.
 - **38 browser tests passed**, no retries, including all-route metadata/schema, local link/fragment checks, JavaScript-disabled field notes/navigation, real worked examples, existing tool workflows, responsive layouts, and accessibility checks.
 - **5 additional SEO browser tests passed against a local fixture-domain launch export**. Ten public canonical/sitemap URLs and social/schema URLs were consistent; collection and 404 stayed excluded/noindex. This was local only, not a production deployment. The preview was rebuilt with indexing disabled afterward.
 - Formatting, zero-warning lint, TypeScript, and static export passed; full and production npm audits both reported **0 vulnerabilities**.
-- Desktop/mobile Chromium/axe checks again reported zero targeted violations on all 11 routes. No document overflow at **320/390/768/1024/1440 px**. New screenshots and before/after rendered audits live in ignored `artifacts/seo/`.
+- Desktop/mobile Chromium/axe checks again reported zero targeted violations on all 11 routes then existing. No document overflow at **320/390/768/1024/1440 px**. New screenshots and before/after rendered audits live in ignored `artifacts/seo/`.
 - The actual preview Host request returned **200** with `X-Robots-Tag: noindex, nofollow`. An unauthenticated external preview fetch was blocked by Arena's traffic gate (**403**); this is not claimed as a successful public crawl.
 - CI now repeats the safe-preview checks and a build/browser-only launch fixture. It has **no deployment job**. Current-commit remote check status must be read from PR #1 rather than inferred from local success.
 
@@ -48,7 +57,7 @@ GitHub Actions is configured to repeat audit/verification/browser checks on push
 ## Unit coverage
 
 - **CSV: 25 tests.** BOM/CRLF, delimiter detection, quoted commas and line breaks, escaped quotes, malformed/empty/oversized input, 5,000-row/100-column bounds, explicit column/header mapping, and formula-safe export.
-- **Keywords: 26 tests.** Whitespace, NFKC Unicode, accent preservation, optional case/punctuation/duplicate handling, Unicode tokens, transparent intent priority, lexical grouping, the sample's real counts, 5,000 rows, and template suggestions.
+- **Keywords: 26 tests (historical; now 35 with clustering).** Whitespace, NFKC Unicode, accent preservation, optional case/punctuation/duplicate handling, Unicode tokens, transparent intent priority, lexical grouping, the sample's real counts, 5,000 rows, and template suggestions.
 - **Text/snippets: 20 tests.** Exact whole-token focus matching, overlapping phrases, stop-word handling, frequency, code-point counts, empty input, URL validation, malformed URL escapes, approximate width, HTML escaping, and fixed-template drafts.
 - **Site metadata: 7 tests.** No imaginary canonical origin, HTTPS validation, explicit indexing opt-in, and mandatory noindex on Vercel previews.
 
@@ -85,8 +94,8 @@ Screenshots and machine-generated audit artifacts are in ignored `artifacts/`; P
 
 ## Files delivered
 
-- `app/`: 11 primary tool/trust routes, not-found UI, global layout, original styling, route metadata, robots, and sitemap.
-- `components/`: responsive shell, studio, ideas, text analysis, snippet preview, meta helper, collection, contact draft, shared controls, and validated optional local state.
+- `app/`: 12 primary tool/trust routes (including `/keyword-clusters/`), not-found UI, global layout, original styling, route metadata, robots, and sitemap.
+- `components/`: responsive shell, studio, clustering, ideas, text analysis, snippet preview, meta helper, collection, contact draft, shared controls, and validated optional local state.
 - `lib/`: pure CSV, keyword, analysis, and metadata logic.
 - `styles/tools.css`, `public/`: companion-tool styles, original identity/illustration/social assets, touch icon, and third-party font/icon license notices.
 - `tests/`, `scripts/`, `.github/workflows/ci.yml`: reproducible tests, static preview, browser setup, and CI (no deployment job).

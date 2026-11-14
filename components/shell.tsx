@@ -11,6 +11,7 @@ import {
   CircleHelp,
   FileText,
   Flower2,
+  Group,
   Leaf,
   Menu,
   PanelTop,
@@ -25,6 +26,7 @@ import { containFocus, Dialog, exportKeywords } from "./ui";
 
 const tools = [
   { href: "/", label: "Keyword studio", icon: Search, badge: "START HERE" },
+  { href: "/keyword-clusters/", label: "Keyword clusters", icon: Group },
   { href: "/keyword-ideas/", label: "Keyword ideas", icon: Sparkles },
   { href: "/text-analyzer/", label: "Text analyzer", icon: FileText },
   { href: "/serp-preview/", label: "SERP preview", icon: PanelTop },
@@ -32,6 +34,7 @@ const tools = [
 ];
 const routeNames: Record<string, string> = {
   "/": "Keyword studio",
+  "/keyword-clusters": "Keyword clusters",
   "/keyword-ideas": "Keyword ideas",
   "/text-analyzer": "Text analyzer",
   "/serp-preview": "SERP preview",
@@ -139,7 +142,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
         <nav>
           <div className="nav-section-label">
-            THE TOOLKIT <span>05</span>
+            THE TOOLKIT <span>06</span>
           </div>
           <div className="nav-tools">
             {tools.map(({ href, label, icon: Icon }) => (

@@ -4,6 +4,7 @@ import { pages, publicPages, type PageDefinition } from "../../lib/pages";
 const definitions: PageDefinition[] = Object.values(pages);
 const tasks: Record<string, string> = {
   "/": "A cleaner keyword list",
+  "/keyword-clusters/": "Keyword clustering",
   "/keyword-ideas/": "Keyword ideas",
   "/text-analyzer/": "Word frequency counter",
   "/serp-preview/": "SERP snippet preview",

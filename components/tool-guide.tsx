@@ -43,6 +43,35 @@ const guides: Record<ToolId, Guide> = {
       { tool: "analyzer", label: "Check word and phrase frequency" },
     ],
   },
+  clusters: {
+    title: "Turn one long list into reviewable groups",
+    intro:
+      "This keyword clustering tool groups phrases by the words they share. It is a reading aid for a list you already have, not a substitute for search research.",
+    steps: [
+      {
+        title: "Paste or import your list",
+        text: "Add one keyword per line, or import CSV, TSV, or TXT. Duplicates are removed and text is lowercased before grouping. For a delimited file, choose the keyword column; other columns, including any metrics, are ignored.",
+      },
+      {
+        title: "Choose how strict the grouping is",
+        text: "“Any shared word” groups on a single repeated word. “A shared two-word phrase” only groups phrases that share an adjacent pair, which produces fewer, tighter groups. The smallest-group control drops groups below two, three, or four phrases.",
+      },
+      {
+        title: "Read the evidence, then take it somewhere",
+        text: "Every group shows the shared wording behind it and its mix of English intent labels. Expand a group to read all of it, then copy, save, export CSV, or open that group in the keyword studio. Anything without shared wording stays on the review list.",
+      },
+    ],
+    example:
+      "Seven phrases including “best coffee beans,” “how to store coffee beans,” “coffee grinder reviews,” “best coffee grinder,” and “how to clean a coffee grinder” form two groups: “Coffee grinder” with three phrases and “Coffee beans” with two. “Coffee” appears in six of the seven, so it is too common to anchor a group, and “cold brew ratio” stays on the review list.",
+    limitTitle: "Shared wording is not shared meaning",
+    limit:
+      "Lexical clusters can split synonyms and combine unrelated phrases that happen to share a word. There is no live SERP overlap, semantic embedding, Google autocomplete, search volume, CPC, or keyword difficulty behind these groups. Work with up to 5,000 phrases, 500,000 characters, and files up to 2 MiB.",
+    methodology: "clustering",
+    related: [
+      { tool: "studio", label: "Clean and organize the full list" },
+      { tool: "ideas", label: "Build angles from a group topic" },
+    ],
+  },
   ideas: {
     title: "Turn a topic into prompts worth editing",
     intro:

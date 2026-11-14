@@ -8,6 +8,7 @@ An original, local-first SEO workbench. Practical keyword and page-copy tools wi
 
 - **Keyword studio:** whitespace/Unicode normalization, optional lowercase and punctuation cleanup, case-insensitive deduplication, rule-based English intent, lexical topic groups, search, filtering, sorting, selection, pagination, and bookmarks.
 - **CSV workflow:** local CSV/TSV/TXT import, delimiter detection, quoted/multiline fields, explicit keyword-column and header mapping, meaningful validation errors, and spreadsheet-safe exports. Imported metrics are deliberately ignored.
+- **Keyword clustering:** dedicated grouping of a pasted or imported list by the words and two-word phrases the phrases share. Adjustable shared-wording rule and minimum group size, the shared wording behind every group, an honest review list for what does not group, and copy/save/export/transfer actions.
 - **Keyword ideas:** 24 transparent English templates across questions, comparisons, and long-tail prompts. Filter, select, save, export, or add ideas to the studio.
 - **Text analyzer:** live Unicode-aware token counts, repeated terms/adjacent phrases, exact focus-phrase matching, descriptive density/coverage, reading-time estimates, and CSV frequency export.
 - **SERP preview:** editable search-style desktop/mobile layouts, URL display validation (no fetching), approximate length/width guides, and escaped HTML tags.
@@ -56,7 +57,7 @@ No secrets are needed. Do not add service-role keys, provider credentials, or co
 
 ## SEO and the later domain
 
-All 11 routes have descriptive titles, task-identifying headings, and route-specific metadata. The five tools include server-rendered practical guides, worked examples, limits, and contextual next-tool links. Structured data describes the actual tool or trust page, not the same app on every route. See the evidence and route decisions in [the SEO audit](docs/SEO-AUDIT.md).
+All 12 routes have descriptive titles, task-identifying headings, and route-specific metadata. The six tools include server-rendered practical guides, worked examples, limits, and contextual next-tool links. Structured data describes the actual tool or trust page, not the same app on every route. See the evidence and route decisions in [the SEO audit](docs/SEO-AUDIT.md).
 
 Until a separately approved custom-domain launch, pages are `noindex, nofollow`, the sitemap is empty, and canonicals/public schema URLs are omitted. `robots.txt` allows crawling so crawlers can read the noindex tags—it is not an access-control mechanism. Keep preview protection enabled. `npm start` adds an always-noindex preview HTTP header; `vercel.json` also scopes noindex headers to known preview hosts. The browser-only collection always stays noindex, has no canonical/schema, and is excluded from the sitemap.
 
@@ -65,7 +66,7 @@ After a separately approved production launch:
 1. Set `SITE_URL` to the owned, connected **HTTPS origin** only—no path, query, fragment, credentials, or non-default port. Placeholder, reserved/local, IP, and known platform-preview origins are rejected.
 2. Review legal identity/contact details, copy, policies, and accessibility.
 3. Deliberately set `ALLOW_INDEXING=true` for production only.
-4. Rebuild and confirm all ten public canonicals, route-specific schema, social-card URLs, actual response headers, robots, and sitemap. `npm start` remains a noindex evaluation server, not a production server.
+4. Rebuild and confirm all eleven public canonicals, route-specific schema, social-card URLs, actual response headers, robots, and sitemap. `npm start` remains a noindex evaluation server, not a production server.
 
 Non-production Vercel builds remain noindex even if `ALLOW_INDEXING` is accidentally set there; public URL metadata is omitted until the full launch gate passes. Domain or environment changes require a new build because this app is static. `.env.example` documents the only optional settings. See the [launch checklist](docs/LAUNCH.md).
 

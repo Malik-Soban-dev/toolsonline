@@ -61,6 +61,11 @@ export default function MethodologyPage() {
           share a word may land together. Group names are normalized anchors, not editorial
           recommendations.
         </p>
+        <p>
+          The <Link href="/keyword-clusters/">keyword clustering tool</Link> runs the same grouping
+          as a dedicated workflow, adds the shared wording behind each group, and sets aside phrases
+          with no shared wording for review.
+        </p>
         <h2 id="intent">04 · Rule-based intent</h2>
         <p>Intent is estimated from English modifiers, in this priority order:</p>
         <ul>
@@ -122,6 +127,28 @@ export default function MethodologyPage() {
           sentence templates. It doesn’t read your page or verify your claims. Search engines can
           rewrite both titles and snippets. Review every draft for accuracy before publishing.
           Exported HTML escapes user-provided characters.
+        </p>
+        <h2 id="clustering">08 · Keyword clustering</h2>
+        <p>
+          Clustering starts from the cleaned list, then anchors groups on recurring wording.
+          Adjacent two-word phrases are considered before single words, because “coffee grinder”
+          separates more than “coffee.” A word that appears in almost every phrase is skipped: it
+          cannot divide a list. Each phrase joins the most specific group it matches, so it appears
+          exactly once, and phrases with no qualifying shared wording go to a review list instead of
+          a group.
+        </p>
+        <p>
+          You can require a shared two-word phrase rather than any shared word, and raise the
+          smallest group size from two to four phrases. Both controls change which groups qualify;
+          neither adds information that isn’t already in your list. Group names are normalized
+          anchors taken from your wording, and the shared-wording line shows the evidence behind
+          each group.
+        </p>
+        <p>
+          This is still lexical grouping. It does not read search results, measure SERP overlap, use
+          embeddings, or estimate demand, difficulty, or cost. Two phrases about the same topic can
+          sit in different groups because they use different words, and two unrelated phrases can
+          share a group because they use the same words.
         </p>
         <h2 id="references">Primary guidance, not fixed SEO rules</h2>
         <p>

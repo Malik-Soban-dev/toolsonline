@@ -22,6 +22,19 @@ export const pages = {
       "Keyword filtering, collection, and CSV export",
     ],
   },
+  clusters: {
+    path: "/keyword-clusters/",
+    title: "Keyword Clustering & Grouping Tool — Shared Wording",
+    description:
+      "Group a keyword list into clusters by shared words and phrases. See the wording behind every group, review what stays ungrouped, and export CSV. Local lexical grouping, not SERP or AI data.",
+    schemaType: "WebApplication",
+    features: [
+      "Clusters built from shared words and two-word phrases",
+      "Adjustable minimum group size and shared-wording rule",
+      "Shared-wording evidence, intent mix, and per-group review",
+      "Copy, save, CSV export, and transfer to the keyword studio",
+    ],
+  },
   ideas: {
     path: "/keyword-ideas/",
     title: "Keyword Idea Generator — Template Prompts",
@@ -120,4 +133,4 @@ export const pages = {
 export const publicPages: PageDefinition[] = Object.values(pages).filter(
   (page: PageDefinition) => !page.private,
 );
-export type ToolId = "studio" | "ideas" | "analyzer" | "snippet" | "meta";
+export type ToolId = "studio" | "clusters" | "ideas" | "analyzer" | "snippet" | "meta";

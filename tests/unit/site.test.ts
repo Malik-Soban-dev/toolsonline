@@ -120,11 +120,11 @@ describe("safe metadata before a deliberate custom-domain launch", () => {
 describe("route-specific public facts", () => {
   it("has unique titles and descriptions and excludes the private collection from public routes", () => {
     const all = Object.values(pages);
-    expect(all).toHaveLength(11);
+    expect(all).toHaveLength(12);
     expect(new Set(all.map((page) => page.path)).size).toBe(all.length);
     expect(new Set(all.map((page) => page.title)).size).toBe(all.length);
     expect(new Set(all.map((page) => page.description)).size).toBe(all.length);
-    expect(publicPages).toHaveLength(10);
+    expect(publicPages).toHaveLength(11);
     expect(publicPages.map((page) => page.path)).not.toContain("/saved/");
     for (const page of all) expect(page.path).toMatch(/^\/(?:[a-z-]+\/)?$/);
   });

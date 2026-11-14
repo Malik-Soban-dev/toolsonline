@@ -16,6 +16,7 @@ import {
   CircleHelp,
   FileUp,
   FolderTree,
+  Group,
   Layers3,
   Leaf,
   ListFilter,
@@ -30,8 +31,8 @@ import {
 } from "lucide-react";
 import {
   cleanKeywords,
-  clusterSummary,
   DEFAULT_OPTIONS,
+  groupByCluster,
   keywordSignature,
   SAMPLE_INPUT,
   type Intent,
@@ -118,7 +119,7 @@ export function KeywordStudio() {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showOptions, setShowOptions] = useState(false);
-  const groups = useMemo(() => clusterSummary(result.keywords), [result]);
+  const groups = useMemo(() => groupByCluster(result.keywords), [result]);
   const dirty = result.sourceKey !== keywordSignature(input, options);
   const filtered = useMemo(() => {
     let items = result.keywords.filter(
@@ -231,7 +232,7 @@ export function KeywordStudio() {
     exportKeywords(items);
     notify(`${items.length} keywords exported. Intent and topic columns are labeled as heuristic.`);
   }
-  const shownGroups = clusterSummary(filtered);
+  const shownGroups = groupByCluster(filtered);
 
   return (
     <>
@@ -738,6 +739,18 @@ export function KeywordStudio() {
               <span>Try a fresh angle with rule-based keyword ideas.</span>
             </div>
             <Link href="/keyword-ideas/" aria-label="Explore keyword ideas">
+              <ArrowRight size={19} />
+            </Link>
+          </div>
+          <div className="next-step-note">
+            <span className="next-step-icon">
+              <Group size={17} />
+            </span>
+            <div>
+              <strong>Or group this list by shared wording.</strong>
+              <span>See clusters, shared wording, and what needs review.</span>
+            </div>
+            <Link href="/keyword-clusters/" aria-label="Group keywords by shared wording">
               <ArrowRight size={19} />
             </Link>
           </div>
